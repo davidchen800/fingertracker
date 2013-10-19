@@ -6,11 +6,13 @@ import java.awt.Color;
 import java.util.List;
 import static java.util.Arrays.asList;
 import java.awt.event.InputEvent;
+
+
+
 Capture cam;
 int col, row;
 int size = 10;
 int old_X, old_Y, old_size;
-
 Robot robot;
 int temp;
 color green = color(20, 166, 53);
@@ -21,6 +23,11 @@ boolean clicked = false;
 
 
 void setup() {
+  /*Initialized the following here
+  Camera
+  Robot
+  Canvas
+  */
 
   size(1280, 720);
 
@@ -51,13 +58,17 @@ void setup() {
 }
 
 void draw() {
+  /*self repeating code that checks if camera has a new frame available
+  If yes, we draw image, load pixels
+  Delay 10, then check for green and purple to simulate mouse functionality
+  */
   if (cam.available() == true) {
     cam.read();
   }
-  image(cam, 0, 0);
+  //image(cam, 0, 0);
   // The following does the same, and is faster when just drawing the image
   // without any additional resizing, transformations, or tint.
-  //set(0, 0, cam);
+  set(0, 0, cam);
   //  for (int i = 0; i< col; i++) {
   //    for (int j = 0; j < row; j++) {
   //      int x = i*size;
@@ -97,7 +108,7 @@ void draw() {
 //      println(temp2.size());
       int new_X = ((Double) center.get(0)).intValue();
       int new_Y = ((Double) center.get(1)).intValue();
-      robot.mouseMove((int)(1.1*(1280-new_X)-60), (int)(1.17*new_Y-25));
+      robot.mouseMove((int)(1.2*(1280-new_X)-120), (int)(1.25*new_Y-55));
     }
     ArrayList temp3 = purple_pixels(pixels);
     if (temp3.size() > 6000) {
@@ -123,6 +134,10 @@ void draw() {
 
 
 void mousePressed() {
+  /*A method activated only when Mouse is pressed.
+  Used for debugging. 
+  Prints coordinates and pixel color of where mouse is when clicked
+  */
   loadPixels();
 
   /* int color;
@@ -155,14 +170,25 @@ void mousePressed() {
   //  println(temp2);
   println(temp2.size());
 }
+
+
+
+
 Boolean is_green(int colors) {
+  //simply checks if color is close enough to green
 
   if (diffColor(colors, green) < 100.0) {
     return true;
   }
   return false;
 }
+
+
+
+
+
 Boolean is_purple(int colors) {
+  //simply checks if color is close enough to purple
 
   if (diffColor(colors, purple) < 100.0) {
     return true;
@@ -170,6 +196,7 @@ Boolean is_purple(int colors) {
   return false;
 }
 static double diffColor(color col1, color col2) {
+  //uses a formula similar to the distance formula to determine how similar colors are
   int Red1, Blue1, Green1, Red2, Blue2, Green2;
   Blue1 =  col1 & 255;
   Green1 = (col1 >> 8) & 255;
@@ -181,6 +208,7 @@ static double diffColor(color col1, color col2) {
   return dist;
 }
 ArrayList findCenter(ArrayList pixel_loc) {
+  //finds the average/center of a list of pixels
   int len = pixel_loc.size();
   double x_tot = 0.0;
   double y_tot = 0.0;
@@ -201,6 +229,7 @@ ArrayList findCenter(ArrayList pixel_loc) {
   return (ArrayList) loc;
 }
 ArrayList green_pixels(int[] pixel_list) {
+  //returns list of all green pixels
   ArrayList<Integer> green = new ArrayList<Integer>();
   for (int x=0; x < 1280; x++) {
     for (int y=0; y < 720; y++) {
@@ -217,6 +246,7 @@ ArrayList green_pixels(int[] pixel_list) {
 }
 
 ArrayList purple_pixels(int[] pixel_list) {
+  //returns a list of purple pixels
   ArrayList<Integer> purple = new ArrayList<Integer>();
   for (int x=0; x < 1280; x++) {
     for (int y=0; y < 720; y++) {
