@@ -1,5 +1,4 @@
 
-
 import processing.video.*;
 import java.awt.Robot;
 import java.awt.AWTException;
@@ -7,7 +6,6 @@ import java.awt.Color;
 import java.util.List;
 import static java.util.Arrays.asList;
 import java.awt.event.InputEvent;
-
 Capture cam;
 int col, row;
 int size = 10;
@@ -16,9 +14,10 @@ int old_X, old_Y, old_size;
 Robot robot;
 int temp;
 color green = color(20, 166, 53);
-color red = color(143, 35, 68);
+color purple = color(173, 14, 177);
 int count = 0;
 boolean clicked = false;
+
 
 
 void setup() {
@@ -87,31 +86,32 @@ void draw() {
   //  if (temp[0] > 0 && temp[0] < 36 && temp[1] > 180 && temp[1] < 220 && temp[2] > 0 && temp[2] < 44) {
   //    temp = c;
   //  robot.mouseMove(mouseX, mouseY+10);
-
   loadPixels();
-  if  (count < 100) {
-    println(count);
+  if  (count < 10) {
     count++;
   } 
   else {
-    ArrayList temp2 = red_pixels(pixels);
-    if (temp2.size()>3000){
+    ArrayList temp2 = green_pixels(pixels);
+    if (temp2.size()>3000) {
       ArrayList center = findCenter(temp2);
-      println(temp2.size());
+//      println(temp2.size());
       int new_X = ((Double) center.get(0)).intValue();
       int new_Y = ((Double) center.get(1)).intValue();
-      robot.mouseMove(1280-new_X, new_Y);
+      robot.mouseMove((int)(1.1*(1280-new_X)-60), (int)(1.17*new_Y-25));
     }
-//   ArrayList temp3 = red_pixels(pixels);
-//  if (!clicked && temp3.size()>15000){
-//  clicked = true;
-//  println("I DID IT");
-//  
-//  robot.mousePress(InputEvent.BUTTON1_MASK);
-//  robot.mouseRelease(InputEvent.BUTTON1_MASK);
-  
-//  }
-
+    ArrayList temp3 = purple_pixels(pixels);
+    if (temp3.size() > 6000) {
+      if (!clicked) {
+        clicked = true;
+        robot.mousePress(InputEvent.BUTTON1_MASK);
+      }
+    } 
+    else {
+      if (clicked) {
+        robot.mouseRelease( InputEvent.BUTTON1_MASK ); 
+        clicked = false;
+      }
+    }
   }
 }
 
@@ -134,7 +134,7 @@ void mousePressed() {
    String temp = Integer.toHexString(t);
    */
 
-    int Red, Blue, Green;
+  int Red, Blue, Green;
   //  //  int tempx, tempy;
   //  //  int c = 0
   //  //  for (int x = mouseX-5; x < mouseX+5; x++){
@@ -143,20 +143,28 @@ void mousePressed() {
   //  //    }
   //  //  
   //  //  }
-    color c = pixels[mouseY*1280+mouseX];
-    
-    Blue =  c & 255;
-    Green = (c >> 8) & 255;
-    Red =   (c >> 16) & 255;
-    println(Red +"," + Green +"," + Blue);
-  //  println(Integer.toString(mouseX) +","+ Integer.toString(mouseY));
-//  ArrayList temp2 = green_pixels(pixels);
-//  println(temp2);
-//  println(temp2.size());
+  color c = pixels[mouseY*1280+mouseX];
+  println(c);
+  println(Integer.toBinaryString(c));
+  Blue =  c & 255;
+  Green = (c >> 8) & 255;
+  Red =   (c >> 16) & 255;
+  println(Red +"," + Green +"," + Blue);
+  println(Integer.toString(mouseX) +","+ Integer.toString(mouseY));
+  ArrayList temp2 = purple_pixels(pixels);
+  //  println(temp2);
+  println(temp2.size());
 }
 Boolean is_green(int colors) {
 
   if (diffColor(colors, green) < 100.0) {
+    return true;
+  }
+  return false;
+}
+Boolean is_purple(int colors) {
+
+  if (diffColor(colors, purple) < 100.0) {
     return true;
   }
   return false;
@@ -207,27 +215,21 @@ ArrayList green_pixels(int[] pixel_list) {
 
   return green;
 }
-ArrayList red_pixels(int[] pixel_list) {
-  ArrayList<Integer> red = new ArrayList<Integer>();
+
+ArrayList purple_pixels(int[] pixel_list) {
+  ArrayList<Integer> purple = new ArrayList<Integer>();
   for (int x=0; x < 1280; x++) {
     for (int y=0; y < 720; y++) {
       int temp = pixel_list[y*1280+x];
-      if (is_red(temp)) {
-        red.add(x);
-        red.add(y);
+      if (is_purple(temp)) {
+        purple.add(x);
+        purple.add(y);
       }
     }
   }
 
 
-  return red;
-}
-Boolean is_red(int colors) {
-
-  if (diffColor(colors, red) < 50.0) {
-    return true;
-  }
-  return false;
+  return purple;
 }
 
 //64 135 107
